@@ -1,0 +1,5 @@
+Python əsasları|Farid Məmmədov|2024
+Flask ilə web|Aynur Həsənova|2023
+Data strukturları|Rəşad Quliyev|2025
+JSON və fayllar|Leyla Kərimli|2024
+Algoritmlər|Vüsal İbrahimov|2022

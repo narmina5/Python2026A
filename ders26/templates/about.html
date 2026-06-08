@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}About Us{% endblock %}
+
+{% block content %}
+<h1>About Us</h1>
+<p>We are a modern technology company.</p>
+
+<h2>Our Team</h2>
+
+<ul>
+{% for member in team %}
+     <div style="color: red">
+         <li>{{ member }}</li>
+     {% endfor %}
+     </div>
+</ul>
+{% endblock %}

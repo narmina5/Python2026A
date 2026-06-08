@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Xidmətlər{% endblock %}
+
+{% block content %}
+<h1>Xidmətlərimiz</h1>
+<p>Şirkətimizin təklif etdiyi xidmətlər.</p>
+
+<!-- TODO: Flask-dan gələn xidmətlər list-ini göstərin -->
+{% for service in services %}
+    <div>
+        <h3>{{ service.name }}</h3>
+        <p>{{ service.description }}</p>
+        <p>Qiymət: {{ service.price }} AZN</p>
+    </div>
+{% endfor %}
+{% endblock %}
+
+

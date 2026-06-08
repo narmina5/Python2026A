@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Haqqımızda{% endblock %}
+
+{% block content %}
+<h1>Haqqımızda</h1>
+<p>Şirkətimiz haqqında məlumat.</p>
+
+<h2>Komandamız</h2>
+<!-- TODO: Flask-dan gələn komanda list-ini göstərin -->
+{% for member in students %}
+     <div style="color: red">
+     {% for info in member %}
+          {{ info }} -
+     {% endfor %}
+     </div>
+{% endfor %}
+{% endblock %}
+

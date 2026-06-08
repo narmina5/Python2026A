@@ -1,0 +1,1814 @@
+<!doctype html>
+<html lang="az">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Python Flask Vizual Bələdçi</title>
+  <style>
+    :root {
+      --ink: #17202a;
+      --muted: #617080;
+      --paper: #fffdf8;
+      --soft: #f5efe4;
+      --line: #ded5c6;
+      --green: #1f9d6a;
+      --green-dark: #116044;
+      --blue: #246bfe;
+      --sky: #dceaff;
+      --yellow: #f2b84b;
+      --orange: #e86f3e;
+      --red: #dd4057;
+      --violet: #7256d9;
+      --code: #101923;
+      --code-2: #172534;
+      --white: #ffffff;
+      --shadow: 0 18px 45px rgba(23, 32, 42, .12);
+      --radius: 8px;
+      --mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        linear-gradient(90deg, rgba(36, 107, 254, .04) 1px, transparent 1px),
+        linear-gradient(rgba(31, 157, 106, .05) 1px, transparent 1px),
+        var(--paper);
+      background-size: 34px 34px;
+      font-family: var(--sans);
+      line-height: 1.55;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    code, pre {
+      font-family: var(--mono);
+    }
+
+    .progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 40;
+      width: 100%;
+      height: 5px;
+      background: transparent;
+    }
+
+    .progress span {
+      display: block;
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--green), var(--blue), var(--yellow));
+      box-shadow: 0 0 18px rgba(36, 107, 254, .35);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 282px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 26px 20px;
+      border-right: 1px solid var(--line);
+      background: rgba(255, 253, 248, .92);
+      backdrop-filter: blur(16px);
+      overflow-y: auto;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 22px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .brand-logo {
+      width: 46px;
+      height: 46px;
+      object-fit: contain;
+      border-radius: 8px;
+      background: var(--white);
+      flex: 0 0 auto;
+    }
+
+    .brand strong {
+      display: block;
+      font-size: 16px;
+      line-height: 1.15;
+    }
+
+    .brand span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 2px;
+    }
+
+    .toc {
+      display: grid;
+      gap: 7px;
+      margin-top: 22px;
+    }
+
+    .toc a {
+      display: flex;
+      gap: 9px;
+      align-items: center;
+      min-height: 38px;
+      padding: 8px 10px;
+      border-radius: var(--radius);
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: background .2s ease, color .2s ease, transform .2s ease;
+    }
+
+    .toc a::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--line);
+      flex: 0 0 auto;
+    }
+
+    .toc a.active,
+    .toc a:hover {
+      color: var(--ink);
+      background: var(--soft);
+      transform: translateX(2px);
+    }
+
+    .toc a.active::before {
+      background: var(--green);
+      box-shadow: 0 0 0 5px rgba(31, 157, 106, .12);
+    }
+
+    .sidebar-note {
+      margin-top: 22px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--white);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    main {
+      min-width: 0;
+    }
+
+    .hero {
+      position: relative;
+      min-height: 94vh;
+      display: grid;
+      align-items: center;
+      padding: 78px clamp(24px, 5vw, 76px) 52px;
+      overflow: hidden;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(380px, .95fr);
+      gap: 44px;
+      align-items: center;
+      width: min(1180px, 100%);
+      margin: 0 auto;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 18px;
+      padding: 7px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--white);
+      color: var(--green-dark);
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: .02em;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--green);
+    }
+
+    h1 {
+      max-width: 820px;
+      margin: 0;
+      font-size: clamp(48px, 7vw, 94px);
+      line-height: .92;
+      letter-spacing: 0;
+    }
+
+    h1 span {
+      color: var(--green);
+    }
+
+    .hero p {
+      max-width: 690px;
+      margin: 22px 0 0;
+      color: var(--muted);
+      font-size: clamp(18px, 2vw, 23px);
+      font-weight: 650;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 30px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 46px;
+      padding: 0 16px;
+      border: 1px solid var(--ink);
+      border-radius: var(--radius);
+      background: var(--ink);
+      color: var(--white);
+      font-weight: 850;
+      text-decoration: none;
+      box-shadow: 5px 5px 0 var(--yellow);
+    }
+
+    .btn.secondary {
+      background: var(--white);
+      color: var(--ink);
+      box-shadow: 5px 5px 0 var(--sky);
+    }
+
+    .browser-card {
+      border: 2px solid var(--ink);
+      border-radius: var(--radius);
+      background: var(--white);
+      box-shadow: 12px 12px 0 rgba(23, 32, 42, .11);
+      overflow: hidden;
+    }
+
+    .browser-top {
+      display: flex;
+      gap: 7px;
+      align-items: center;
+      height: 42px;
+      padding: 0 14px;
+      border-bottom: 2px solid var(--ink);
+      background: var(--soft);
+    }
+
+    .dot {
+      width: 11px;
+      height: 11px;
+      border: 1.5px solid var(--ink);
+      border-radius: 50%;
+    }
+
+    .dot.red { background: var(--red); }
+    .dot.yellow { background: var(--yellow); }
+    .dot.green { background: var(--green); }
+
+    .urlbar {
+      flex: 1;
+      margin-left: 8px;
+      padding: 5px 9px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--white);
+      color: var(--muted);
+      font-size: 12px;
+      font-family: var(--mono);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .browser-body {
+      padding: 18px;
+      background: linear-gradient(180deg, #ffffff, #f9fbff);
+    }
+
+    .request-demo {
+      display: grid;
+      gap: 12px;
+    }
+
+    .packet {
+      display: grid;
+      grid-template-columns: 50px 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 14px;
+      border: 1.5px solid var(--ink);
+      border-radius: var(--radius);
+      background: var(--white);
+    }
+
+    .packet-icon {
+      display: grid;
+      place-items: center;
+      width: 50px;
+      height: 50px;
+      border-radius: 8px;
+      background: var(--sky);
+      font-size: 25px;
+      font-weight: 900;
+    }
+
+    .packet h3 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .packet p {
+      margin: 1px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 0 10px;
+      border-radius: 999px;
+      background: var(--ink);
+      color: var(--white);
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .pulse-line {
+      position: relative;
+      height: 26px;
+      margin-left: 38px;
+      border-left: 3px dashed var(--line);
+    }
+
+    .pulse-line::after {
+      content: "";
+      position: absolute;
+      left: -7px;
+      top: 1px;
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: var(--blue);
+      animation: travel 1.8s infinite ease-in-out;
+    }
+
+    @keyframes travel {
+      0% { transform: translateY(0); opacity: .15; }
+      45% { opacity: 1; }
+      100% { transform: translateY(24px); opacity: .15; }
+    }
+
+    section {
+      padding: 76px clamp(24px, 5vw, 76px);
+      border-bottom: 1px solid var(--line);
+      scroll-margin-top: 22px;
+    }
+
+    .section-inner {
+      width: min(1180px, 100%);
+      margin: 0 auto;
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      gap: 28px;
+      align-items: start;
+      margin-bottom: 32px;
+    }
+
+    .number {
+      display: inline-flex;
+      width: 72px;
+      height: 72px;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid var(--ink);
+      border-radius: var(--radius);
+      background: var(--white);
+      box-shadow: 7px 7px 0 var(--green);
+      font-size: 24px;
+      font-weight: 950;
+    }
+
+    h2 {
+      margin: 0;
+      max-width: 850px;
+      font-size: clamp(32px, 4vw, 56px);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      max-width: 850px;
+      margin: 16px 0 0;
+      color: var(--muted);
+      font-size: 19px;
+      font-weight: 620;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .panel {
+      border: 1.5px solid var(--ink);
+      border-radius: var(--radius);
+      background: var(--white);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel.pad {
+      padding: 22px;
+    }
+
+    .panel-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      padding: 13px 16px;
+      border-bottom: 1.5px solid var(--ink);
+      background: var(--soft);
+      font-weight: 900;
+    }
+
+    .mini-label {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 8px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--white);
+      color: var(--muted);
+      font-size: 11px;
+      font-family: var(--mono);
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .concept-map {
+      display: grid;
+      grid-template-columns: 1fr 90px 1fr;
+      gap: 12px;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .stack {
+      display: grid;
+      gap: 12px;
+    }
+
+    .node {
+      padding: 16px;
+      border: 1.5px solid var(--ink);
+      border-radius: var(--radius);
+      background: var(--white);
+    }
+
+    .node h3 {
+      margin: 0 0 4px;
+      font-size: 18px;
+    }
+
+    .node p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .arrow-rail {
+      display: grid;
+      place-items: center;
+      height: 100%;
+      min-height: 280px;
+    }
+
+    .arrow-rail span {
+      display: grid;
+      place-items: center;
+      width: 62px;
+      height: 62px;
+      border: 2px solid var(--ink);
+      border-radius: 50%;
+      background: var(--yellow);
+      font-size: 28px;
+      font-weight: 950;
+    }
+
+    .flow-chart {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(110px, 1fr));
+      gap: 10px;
+      padding: 20px;
+      align-items: stretch;
+    }
+
+    .flow-step {
+      position: relative;
+      min-height: 140px;
+      padding: 14px;
+      border: 1.5px solid var(--ink);
+      border-radius: var(--radius);
+      background: var(--white);
+    }
+
+    .flow-step:not(:last-child)::after {
+      content: "→";
+      position: absolute;
+      right: -17px;
+      top: 50%;
+      z-index: 2;
+      transform: translateY(-50%);
+      width: 24px;
+      height: 24px;
+      display: grid;
+      place-items: center;
+      border: 1.5px solid var(--ink);
+      border-radius: 50%;
+      background: var(--yellow);
+      font-weight: 950;
+      line-height: 1;
+    }
+
+    .flow-step b {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 15px;
+    }
+
+    .flow-step p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .flow-step:nth-child(1) { background: #e8f5ef; }
+    .flow-step:nth-child(2) { background: #e8efff; }
+    .flow-step:nth-child(3) { background: #fff5dd; }
+    .flow-step:nth-child(4) { background: #f1ebff; }
+    .flow-step:nth-child(5) { background: #ffece6; }
+
+    .code-card {
+      border: 1.5px solid var(--ink);
+      border-radius: var(--radius);
+      background: var(--code);
+      color: #edf6ff;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .code-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(255,255,255,.13);
+      background: var(--code-2);
+      color: #bcd2e8;
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .copy-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 30px;
+      padding: 0 10px;
+      border: 1px solid rgba(255,255,255,.24);
+      border-radius: 6px;
+      background: transparent;
+      color: #dceaff;
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 850;
+      cursor: pointer;
+    }
+
+    pre {
+      margin: 0;
+      padding: 18px;
+      overflow: auto;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .kw { color: #79c0ff; }
+    .fn { color: #d2a8ff; }
+    .st { color: #a5d6ff; }
+    .cm { color: #8b949e; }
+    .nm { color: #ffa657; }
+
+    .route-board {
+      display: grid;
+      gap: 12px;
+      padding: 18px;
+    }
+
+    .route-row {
+      display: grid;
+      grid-template-columns: 96px 1fr 138px;
+      gap: 12px;
+      align-items: center;
+      padding: 12px;
+      border: 1.5px solid var(--ink);
+      border-radius: var(--radius);
+      background: var(--white);
+    }
+
+    .method {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 34px;
+      border-radius: 6px;
+      background: var(--green);
+      color: var(--white);
+      font-family: var(--mono);
+      font-weight: 900;
+    }
+
+    .method.post {
+      background: var(--blue);
+    }
+
+    .method.put {
+      background: var(--yellow);
+      color: var(--ink);
+    }
+
+    .route-path {
+      font-family: var(--mono);
+      font-weight: 850;
+      word-break: break-word;
+    }
+
+    .route-desc {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .template-visual {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      padding: 20px;
+    }
+
+    .doc {
+      border: 1.5px solid var(--ink);
+      border-radius: var(--radius);
+      background: var(--white);
+      overflow: hidden;
+    }
+
+    .doc h3 {
+      margin: 0;
+      padding: 12px 14px;
+      border-bottom: 1.5px solid var(--ink);
+      background: var(--soft);
+      font-size: 16px;
+    }
+
+    .doc-lines {
+      padding: 14px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .line {
+      height: 12px;
+      border-radius: 999px;
+      background: var(--line);
+    }
+
+    .line.short { width: 58%; }
+    .line.medium { width: 76%; }
+    .line.green { background: rgba(31, 157, 106, .32); }
+    .line.blue { background: rgba(36, 107, 254, .25); }
+    .line.yellow { background: rgba(242, 184, 75, .45); }
+
+    .jinja-token {
+      display: inline-flex;
+      margin: 5px 0;
+      padding: 6px 8px;
+      border-radius: 6px;
+      background: var(--sky);
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .folder-tree {
+      padding: 20px;
+      background: #fbfaf7;
+    }
+
+    .tree-item {
+      display: grid;
+      grid-template-columns: 52px 1fr;
+      gap: 8px;
+      align-items: start;
+      margin: 8px 0;
+      font-family: var(--mono);
+      font-size: 14px;
+      font-weight: 850;
+    }
+
+    .tree-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 24px;
+      padding: 0 7px;
+      border: 1px solid var(--ink);
+      border-radius: 6px;
+      background: var(--sky);
+      color: var(--ink);
+      font-size: 10px;
+      font-weight: 950;
+    }
+
+    .tree-badge.file {
+      background: var(--white);
+    }
+
+    .tree-item span:last-child {
+      color: var(--muted);
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .indent {
+      margin-left: 32px;
+    }
+
+    .data-lanes {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      padding: 20px;
+    }
+
+    .lane {
+      display: grid;
+      grid-template-columns: 110px 1fr;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .lane-label {
+      font-family: var(--mono);
+      font-weight: 900;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .lane-track {
+      min-height: 48px;
+      padding: 7px;
+      border: 1.5px solid var(--ink);
+      border-radius: 999px;
+      background: var(--white);
+    }
+
+    .lane-fill {
+      height: 32px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--green), var(--blue));
+      width: var(--w);
+      min-width: 38px;
+    }
+
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      padding: 18px;
+    }
+
+    .status-card {
+      padding: 15px;
+      border: 1.5px solid var(--ink);
+      border-radius: var(--radius);
+      background: var(--white);
+    }
+
+    .status-code {
+      display: block;
+      margin-bottom: 7px;
+      font-family: var(--mono);
+      font-size: 22px;
+      font-weight: 950;
+    }
+
+    .status-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .warning-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .warning {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 13px;
+      padding: 15px;
+      border: 1.5px solid var(--ink);
+      border-radius: var(--radius);
+      background: var(--white);
+    }
+
+    .warning-icon {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+      background: #ffe1d8;
+      color: var(--orange);
+      font-weight: 950;
+    }
+
+    .warning h3 {
+      margin: 0 0 4px;
+      font-size: 17px;
+    }
+
+    .warning p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .quiz {
+      padding: 22px;
+    }
+
+    .quiz-options {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .quiz button {
+      min-height: 46px;
+      padding: 10px 13px;
+      border: 1.5px solid var(--ink);
+      border-radius: var(--radius);
+      background: var(--white);
+      color: var(--ink);
+      text-align: left;
+      font: inherit;
+      font-weight: 780;
+      cursor: pointer;
+    }
+
+    .quiz button.correct {
+      background: #dff4e9;
+      border-color: var(--green-dark);
+    }
+
+    .quiz button.wrong {
+      background: #ffe3dd;
+      border-color: var(--orange);
+    }
+
+    .answer {
+      min-height: 28px;
+      margin-top: 12px;
+      color: var(--muted);
+      font-weight: 750;
+    }
+
+    .checklist {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .check {
+      display: grid;
+      grid-template-columns: 30px 1fr;
+      gap: 11px;
+      align-items: start;
+      padding: 14px;
+      border: 1.5px solid var(--ink);
+      border-radius: var(--radius);
+      background: var(--white);
+    }
+
+    .check::before {
+      content: "✓";
+      display: grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--green);
+      color: var(--white);
+      font-weight: 950;
+    }
+
+    .check b {
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .check span {
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 650;
+    }
+
+    .footer {
+      padding: 46px clamp(24px, 5vw, 76px);
+      background: var(--ink);
+      color: var(--white);
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      align-items: center;
+      width: min(1180px, 100%);
+      margin: 0 auto;
+    }
+
+    .footer p {
+      margin: 0;
+      color: #c9d2dc;
+    }
+
+    .top-link {
+      display: inline-flex;
+      align-items: center;
+      min-height: 40px;
+      padding: 0 14px;
+      border: 1px solid rgba(255,255,255,.22);
+      border-radius: var(--radius);
+      color: var(--white);
+      text-decoration: none;
+      font-weight: 850;
+    }
+
+    @media (max-width: 1040px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: relative;
+        height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .toc {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .hero-grid,
+      .grid-2,
+      .template-visual {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        min-height: auto;
+      }
+
+      .section-head {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      .flow-chart,
+      .status-grid,
+      .grid-3,
+      .checklist {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .flow-step:not(:last-child)::after {
+        display: none;
+      }
+    }
+
+    @media (max-width: 650px) {
+      .toc,
+      .flow-chart,
+      .status-grid,
+      .grid-3,
+      .checklist {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-grid {
+        gap: 28px;
+      }
+
+      .browser-card {
+        margin-inline: -4px;
+      }
+
+      .concept-map {
+        grid-template-columns: 1fr;
+      }
+
+      .arrow-rail {
+        min-height: 62px;
+      }
+
+      .arrow-rail span {
+        transform: rotate(90deg);
+      }
+
+      .route-row,
+      .lane {
+        grid-template-columns: 1fr;
+      }
+
+      .packet {
+        grid-template-columns: 44px 1fr;
+      }
+
+      .packet .tag {
+        grid-column: 1 / -1;
+        justify-self: start;
+      }
+
+      .footer-inner {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand">
+        <img class="brand-logo" src="data:image/png;base64,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" alt="Farid Teaches logo">
+        <div>
+          <strong>Farid Teaches</strong>
+          <span>Python Flask guide</span>
+        </div>
+      </div>
+      <nav class="toc" aria-label="Səhifə bölmələri">
+        <a href="#what">Flask nədir?</a>
+        <a href="#cycle">Request lifecycle</a>
+        <a href="#routes">Route sistemi</a>
+        <a href="#templates">Jinja template</a>
+        <a href="#structure">Project structure</a>
+        <a href="#data">Form və JSON</a>
+        <a href="#status">Response və status</a>
+        <a href="#deploy">Deployment</a>
+        <a href="#mistakes">Səhvlər</a>
+        <a href="#recap">Yekun</a>
+      </nav>
+      <div class="sidebar-note">
+        Məqsəd: Flask-in necə işlədiyini sadə vizuallar, real kod parçaları və axın diaqramları ilə aydın göstərmək.
+      </div>
+    </aside>
+
+    <main>
+      <header class="hero" id="top">
+        <div class="hero-grid">
+          <div>
+            <div class="eyebrow">micro web framework</div>
+            <h1>Python <span>Flask</span> necə işləyir?</h1>
+            <p>
+              Flask brauzerdən gələn HTTP request-i Python funksiyasına bağlayır,
+              funksiyanın yaratdığı nəticəni response kimi geri qaytarır. Bu səhifə həmin
+              prosesin bütün əsas hissələrini vizual olaraq izah edir.
+            </p>
+            <div class="hero-actions">
+              <a class="btn" href="#cycle">Axına bax</a>
+              <a class="btn secondary" href="#routes">Kod nümunələri</a>
+            </div>
+          </div>
+
+          <div class="browser-card" aria-label="Flask request demo">
+            <div class="browser-top">
+              <span class="dot red"></span>
+              <span class="dot yellow"></span>
+              <span class="dot green"></span>
+              <div class="urlbar">http://127.0.0.1:5000/products</div>
+            </div>
+            <div class="browser-body">
+              <div class="request-demo">
+                <div class="packet">
+                  <div class="packet-icon">1</div>
+                  <div>
+                    <h3>Browser</h3>
+                    <p>İstifadəçi URL açır və HTTP request göndərilir.</p>
+                  </div>
+                  <span class="tag">GET /products</span>
+                </div>
+                <div class="pulse-line"></div>
+                <div class="packet">
+                  <div class="packet-icon">2</div>
+                  <div>
+                    <h3>Flask app</h3>
+                    <p>Route tapılır, view function işə düşür.</p>
+                  </div>
+                  <span class="tag">@app.route</span>
+                </div>
+                <div class="pulse-line"></div>
+                <div class="packet">
+                  <div class="packet-icon">3</div>
+                  <div>
+                    <h3>Response</h3>
+                    <p>HTML, JSON və ya redirect browser-ə qaytarılır.</p>
+                  </div>
+                  <span class="tag">200 OK</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <section id="what">
+        <div class="section-inner">
+          <div class="section-head">
+            <div class="number">01</div>
+            <div>
+              <h2>Flask nədir və nə üçün istifadə olunur?</h2>
+              <p class="lead">
+                Flask Python ilə web application və API qurmaq üçün yüngül framework-dür.
+                O, routing, request/response, template rendering və extension ekosistemini verir,
+                amma tətbiqin strukturunu zorla diktə etmir.
+              </p>
+            </div>
+          </div>
+
+          <div class="grid-3">
+            <article class="panel pad">
+              <span class="mini-label">minimal core</span>
+              <h3>Kiçik başlayır</h3>
+              <p>Bir `app.py` faylı ilə işlək web server yaratmaq mümkündür. Sonra ehtiyac olduqca `Blueprint`, database və authentication əlavə edilir.</p>
+            </article>
+            <article class="panel pad">
+              <span class="mini-label">Python functions</span>
+              <h3>Route = funksiya</h3>
+              <p>Hər URL adətən bir Python funksiyasına bağlanır. Funksiya string, HTML template, JSON və ya redirect qaytara bilər.</p>
+            </article>
+            <article class="panel pad">
+              <span class="mini-label">backend</span>
+              <h3>Məntiq server-dədir</h3>
+              <p>Database sorğuları, form validation, session və API qaydaları server tərəfində icra olunur.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="cycle">
+        <div class="section-inner">
+          <div class="section-head">
+            <div class="number">02</div>
+            <div>
+              <h2>Request lifecycle: brauzerdən Python-a, Python-dan HTML-ə</h2>
+              <p class="lead">
+                Flask-in əsas ideyası budur: URL gəlir, uyğun route seçilir, view function işləyir,
+                nəticə response obyektinə çevrilir və browser-ə göndərilir.
+              </p>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title">
+              <span>HTTP request axını</span>
+              <span class="mini-label">browser → server → browser</span>
+            </div>
+            <div class="flow-chart">
+              <div class="flow-step">
+                <b>1. URL</b>
+                <p>İstifadəçi `/dashboard` açır və browser HTTP request yaradır.</p>
+              </div>
+              <div class="flow-step">
+                <b>2. WSGI server</b>
+                <p>Request Flask application obyektinə ötürülür.</p>
+              </div>
+              <div class="flow-step">
+                <b>3. Routing</b>
+                <p>Flask URL-i `@app.route` qaydaları ilə müqayisə edir.</p>
+              </div>
+              <div class="flow-step">
+                <b>4. View function</b>
+                <p>Python kodu data hazırlayır, template render edir və ya JSON yaradır.</p>
+              </div>
+              <div class="flow-step">
+                <b>5. Response</b>
+                <p>HTML, JSON, file və ya redirect status code ilə geri dönür.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="routes">
+        <div class="section-inner">
+          <div class="section-head">
+            <div class="number">03</div>
+            <div>
+              <h2>Route sistemi: URL-i Python funksiyasına bağlamaq</h2>
+              <p class="lead">
+                `@app.route()` decorator kimi işləyir: aşağıdakı funksiyanı seçilmiş URL üçün cavabdeh edir.
+                Bu, Flask-in ən vacib mexanizmidir.
+              </p>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="code-card">
+              <div class="code-head">
+                <span>app.py</span>
+                <button class="copy-btn" data-copy="routeCode">Copy</button>
+              </div>
+              <pre id="routeCode"><code><span class="kw">from</span> flask <span class="kw">import</span> Flask, render_template, jsonify
+
+app = <span class="fn">Flask</span>(__name__)
+
+<span class="cm"># URL: http://127.0.0.1:5000/</span>
+@app.route(<span class="st">"/"</span>)
+<span class="kw">def</span> <span class="fn">home</span>():
+    <span class="kw">return</span> <span class="st">"Salam, Flask!"</span>
+
+<span class="cm"># URL parameter: /users/42</span>
+@app.route(<span class="st">"/users/&lt;int:user_id&gt;"</span>)
+<span class="kw">def</span> <span class="fn">user_detail</span>(user_id):
+    <span class="kw">return</span> <span class="fn">render_template</span>(<span class="st">"user.html"</span>, user_id=user_id)
+
+<span class="cm"># API endpoint</span>
+@app.route(<span class="st">"/api/health"</span>)
+<span class="kw">def</span> <span class="fn">health</span>():
+    <span class="kw">return</span> <span class="fn">jsonify</span>({<span class="st">"status"</span>: <span class="st">"ok"</span>})</code></pre>
+            </div>
+
+            <div class="panel">
+              <div class="panel-title">
+                <span>Route mapping</span>
+                <span class="mini-label">URL → function</span>
+              </div>
+              <div class="route-board">
+                <div class="route-row">
+                  <span class="method">GET</span>
+                  <span class="route-path">/</span>
+                  <span class="route-desc">home()</span>
+                </div>
+                <div class="route-row">
+                  <span class="method">GET</span>
+                  <span class="route-path">/users/&lt;int:user_id&gt;</span>
+                  <span class="route-desc">user_detail()</span>
+                </div>
+                <div class="route-row">
+                  <span class="method post">POST</span>
+                  <span class="route-path">/login</span>
+                  <span class="route-desc">login()</span>
+                </div>
+                <div class="route-row">
+                  <span class="method put">PUT</span>
+                  <span class="route-path">/api/products/&lt;id&gt;</span>
+                  <span class="route-desc">update_product()</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="templates">
+        <div class="section-inner">
+          <div class="section-head">
+            <div class="number">04</div>
+            <div>
+              <h2>Jinja template: Python datasını HTML-ə çevirmək</h2>
+              <p class="lead">
+                Flask `render_template()` ilə `templates/` qovluğundakı HTML faylı oxuyur,
+                Python dəyişənlərini Jinja sintaksisi ilə həmin HTML-in içinə yerləşdirir.
+              </p>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title">
+              <span>Template rendering vizualı</span>
+              <span class="mini-label">data + HTML = final page</span>
+            </div>
+            <div class="concept-map">
+              <div class="stack">
+                <div class="node">
+                  <h3>Python data</h3>
+                  <p>`products = [{"name": "Laptop"}, {"name": "Mouse"}]`</p>
+                </div>
+                <div class="node">
+                  <h3>View function</h3>
+                  <p>`return render_template("products.html", products=products)`</p>
+                </div>
+              </div>
+              <div class="arrow-rail"><span>→</span></div>
+              <div class="doc">
+                <h3>products.html</h3>
+                <div class="doc-lines">
+                  <div class="line medium"></div>
+                  <span class="jinja-token">{% for product in products %}</span>
+                  <div class="line green"></div>
+                  <span class="jinja-token">{{ product.name }}</span>
+                  <div class="line blue short"></div>
+                  <span class="jinja-token">{% endfor %}</span>
+                  <div class="line yellow"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-2" style="margin-top:20px">
+            <div class="code-card">
+              <div class="code-head">
+                <span>app.py</span>
+                <button class="copy-btn" data-copy="templatePy">Copy</button>
+              </div>
+              <pre id="templatePy"><code>@app.route(<span class="st">"/products"</span>)
+<span class="kw">def</span> <span class="fn">products</span>():
+    items = [
+        {<span class="st">"name"</span>: <span class="st">"Keyboard"</span>, <span class="st">"price"</span>: <span class="nm">49</span>},
+        {<span class="st">"name"</span>: <span class="st">"Monitor"</span>, <span class="st">"price"</span>: <span class="nm">220</span>}
+    ]
+    <span class="kw">return</span> <span class="fn">render_template</span>(<span class="st">"products.html"</span>, products=items)</code></pre>
+            </div>
+            <div class="code-card">
+              <div class="code-head">
+                <span>templates/products.html</span>
+                <button class="copy-btn" data-copy="templateHtml">Copy</button>
+              </div>
+              <pre id="templateHtml"><code>&lt;h1&gt;Products&lt;/h1&gt;
+&lt;ul&gt;
+  {% for product in products %}
+    &lt;li&gt;
+      {{ product.name }} - ${{ product.price }}
+    &lt;/li&gt;
+  {% endfor %}
+&lt;/ul&gt;</code></pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="structure">
+        <div class="section-inner">
+          <div class="section-head">
+            <div class="number">05</div>
+            <div>
+              <h2>Project structure: Flask faylları harada saxlayır?</h2>
+              <p class="lead">
+                Flask default olaraq HTML template-ləri `templates/`, CSS/JS/image fayllarını isə
+                `static/` qovluğundan gözləyir. Bu qayda layihəni oxunaqlı saxlayır.
+              </p>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="panel">
+              <div class="panel-title">
+                <span>Sadə Flask layihəsi</span>
+                <span class="mini-label">recommended layout</span>
+              </div>
+              <div class="folder-tree">
+                <div class="tree-item"><span class="tree-badge">DIR</span><div>my_flask_app <span>layihənin kökü</span></div></div>
+                <div class="tree-item indent"><span class="tree-badge file">FILE</span><div>app.py <span>Flask app və routes</span></div></div>
+                <div class="tree-item indent"><span class="tree-badge">DIR</span><div>templates <span>Jinja HTML files</span></div></div>
+                <div class="tree-item indent"><span class="tree-badge file">FILE</span><div>base.html <span>ümumi layout</span></div></div>
+                <div class="tree-item indent"><span class="tree-badge file">FILE</span><div>products.html <span>səhifə template-i</span></div></div>
+                <div class="tree-item indent"><span class="tree-badge">DIR</span><div>static <span>browser assets</span></div></div>
+                <div class="tree-item indent"><span class="tree-badge file">FILE</span><div>style.css <span>CSS dizaynı</span></div></div>
+                <div class="tree-item indent"><span class="tree-badge file">FILE</span><div>app.js <span>frontend JavaScript</span></div></div>
+                <div class="tree-item indent"><span class="tree-badge file">FILE</span><div>requirements.txt <span>dependencies</span></div></div>
+              </div>
+            </div>
+
+            <div class="panel pad">
+              <span class="mini-label">mental model</span>
+              <h3>Üç qat kimi düşün</h3>
+              <p><b>Route layer:</b> URL-ləri qəbul edir və hansı funksiyanın işləyəcəyini seçir.</p>
+              <p><b>Logic layer:</b> Python kodu data hazırlayır, database ilə danışır, validation edir.</p>
+              <p><b>Presentation layer:</b> Jinja template-lər nəticəni HTML kimi göstərir.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="data">
+        <div class="section-inner">
+          <div class="section-head">
+            <div class="number">06</div>
+            <div>
+              <h2>Form və JSON: istifadəçi datası Flask-ə necə gəlir?</h2>
+              <p class="lead">
+                HTML form adətən `request.form` ilə, JSON API body isə `request.get_json()` ilə oxunur.
+                Flask burada request obyektini hazır formada verir.
+              </p>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="code-card">
+              <div class="code-head">
+                <span>POST form</span>
+                <button class="copy-btn" data-copy="formCode">Copy</button>
+              </div>
+              <pre id="formCode"><code><span class="kw">from</span> flask <span class="kw">import</span> request, redirect
+
+@app.route(<span class="st">"/login"</span>, methods=[<span class="st">"GET"</span>, <span class="st">"POST"</span>])
+<span class="kw">def</span> <span class="fn">login</span>():
+    <span class="kw">if</span> request.method == <span class="st">"POST"</span>:
+        email = request.form.get(<span class="st">"email"</span>)
+        password = request.form.get(<span class="st">"password"</span>)
+        <span class="cm"># validate user here</span>
+        <span class="kw">return</span> <span class="fn">redirect</span>(<span class="st">"/dashboard"</span>)
+
+    <span class="kw">return</span> <span class="fn">render_template</span>(<span class="st">"login.html"</span>)</code></pre>
+            </div>
+            <div class="code-card">
+              <div class="code-head">
+                <span>JSON API</span>
+                <button class="copy-btn" data-copy="jsonCode">Copy</button>
+              </div>
+              <pre id="jsonCode"><code><span class="kw">from</span> flask <span class="kw">import</span> request, jsonify
+
+@app.route(<span class="st">"/api/products"</span>, methods=[<span class="st">"POST"</span>])
+<span class="kw">def</span> <span class="fn">create_product</span>():
+    data = request.get_json()
+
+    product = {
+        <span class="st">"name"</span>: data[<span class="st">"name"</span>],
+        <span class="st">"price"</span>: data[<span class="st">"price"</span>]
+    }
+
+    <span class="kw">return</span> <span class="fn">jsonify</span>(product), <span class="nm">201</span></code></pre>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top:20px">
+            <div class="panel-title">
+              <span>Data kanalları</span>
+              <span class="mini-label">request object</span>
+            </div>
+            <div class="data-lanes">
+              <div class="lane">
+                <div class="lane-label">request.args</div>
+                <div class="lane-track"><div class="lane-fill" style="--w:62%"></div></div>
+              </div>
+              <div class="lane">
+                <div class="lane-label">request.form</div>
+                <div class="lane-track"><div class="lane-fill" style="--w:78%"></div></div>
+              </div>
+              <div class="lane">
+                <div class="lane-label">request.json</div>
+                <div class="lane-track"><div class="lane-fill" style="--w:88%"></div></div>
+              </div>
+              <div class="lane">
+                <div class="lane-label">request.files</div>
+                <div class="lane-track"><div class="lane-fill" style="--w:48%"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="status">
+        <div class="section-inner">
+          <div class="section-head">
+            <div class="number">07</div>
+            <div>
+              <h2>Response və status code: browser nə baş verdiyini necə anlayır?</h2>
+              <p class="lead">
+                Flask sadə string qaytarsanız belə onu HTTP response-a çevirir.
+                Status code browser-ə və API client-ə nəticənin mənasını bildirir.
+              </p>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title">
+              <span>Ən çox görülən HTTP status code-lar</span>
+              <span class="mini-label">response signals</span>
+            </div>
+            <div class="status-grid">
+              <div class="status-card">
+                <span class="status-code" style="color:var(--green)">200</span>
+                <p>OK: request uğurlu oldu.</p>
+              </div>
+              <div class="status-card">
+                <span class="status-code" style="color:var(--blue)">201</span>
+                <p>Created: yeni resource yaradıldı.</p>
+              </div>
+              <div class="status-card">
+                <span class="status-code" style="color:var(--yellow)">302</span>
+                <p>Redirect: başqa URL-ə yönləndir.</p>
+              </div>
+              <div class="status-card">
+                <span class="status-code" style="color:var(--red)">404</span>
+                <p>Not Found: route və ya resource tapılmadı.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="code-card" style="margin-top:20px">
+            <div class="code-head">
+              <span>custom status</span>
+              <button class="copy-btn" data-copy="statusCode">Copy</button>
+            </div>
+            <pre id="statusCode"><code>@app.route(<span class="st">"/api/products/&lt;int:product_id&gt;"</span>)
+<span class="kw">def</span> <span class="fn">get_product</span>(product_id):
+    product = find_product(product_id)
+
+    <span class="kw">if</span> product <span class="kw">is</span> None:
+        <span class="kw">return</span> {<span class="st">"error"</span>: <span class="st">"Product not found"</span>}, <span class="nm">404</span>
+
+    <span class="kw">return</span> product, <span class="nm">200</span></code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section id="deploy">
+        <div class="section-inner">
+          <div class="section-head">
+            <div class="number">08</div>
+            <div>
+              <h2>Development server və deployment fərqi</h2>
+              <p class="lead">
+                `flask run` öyrənmək və local development üçündür. Production mühitində adətən
+                Gunicorn/uWSGI kimi WSGI server və Nginx kimi reverse proxy istifadə olunur.
+              </p>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title">
+              <span>Production arxitekturası</span>
+              <span class="mini-label">real server flow</span>
+            </div>
+            <div class="flow-chart">
+              <div class="flow-step">
+                <b>User browser</b>
+                <p>HTTPS request göndərir.</p>
+              </div>
+              <div class="flow-step">
+                <b>Nginx</b>
+                <p>Static files verir və request-i WSGI server-ə yönləndirir.</p>
+              </div>
+              <div class="flow-step">
+                <b>Gunicorn</b>
+                <p>Bir neçə worker ilə Flask app-i işlədir.</p>
+              </div>
+              <div class="flow-step">
+                <b>Flask app</b>
+                <p>Route, business logic və template/API response yaradır.</p>
+              </div>
+              <div class="flow-step">
+                <b>Database</b>
+                <p>PostgreSQL, SQLite, MySQL və s. ilə data saxlanılır.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-2" style="margin-top:20px">
+            <div class="panel pad">
+              <span class="mini-label">local development</span>
+              <h3>Öyrənmək üçün</h3>
+              <p>`debug=True`, avtomatik reload, sadə `flask run`, localhost testing. Sürətli iterasiya üçündür.</p>
+            </div>
+            <div class="panel pad">
+              <span class="mini-label">production</span>
+              <h3>İstifadəçilər üçün</h3>
+              <p>Environment variables, secret management, logging, WSGI server, HTTPS və monitoring lazımdır.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="mistakes">
+        <div class="section-inner">
+          <div class="section-head">
+            <div class="number">09</div>
+            <div>
+              <h2>Yeni başlayanlarda ən çox qarışan yerlər</h2>
+              <p class="lead">
+                Flask sadə görünsə də, bəzi konseptlər tez-tez qarışır. Aşağıdakı qaydalar
+                debugging vaxtına qənaət edir.
+              </p>
+            </div>
+          </div>
+
+          <div class="warning-list">
+            <div class="warning">
+              <div class="warning-icon">!</div>
+              <div>
+                <h3>`templates/` və `static/` adları xüsusi məna daşıyır</h3>
+                <p>Flask default olaraq bu qovluq adlarını axtarır. Adları dəyişirsinizsə, bunu app yaradılarkən göstərmək lazımdır.</p>
+              </div>
+            </div>
+            <div class="warning">
+              <div class="warning-icon">!</div>
+              <div>
+                <h3>GET və POST eyni şey deyil</h3>
+                <p>GET data oxumaq, POST isə data göndərmək və ya yaratmaq üçün istifadə olunur. Form submit çox vaxt POST olmalıdır.</p>
+              </div>
+            </div>
+            <div class="warning">
+              <div class="warning-icon">!</div>
+              <div>
+                <h3>`debug=True` production-da saxlanmamalıdır</h3>
+                <p>Debug mode detallı error məlumatları göstərə bilər. Bu məlumatlar real istifadəçi mühitində risklidir.</p>
+              </div>
+            </div>
+            <div class="warning">
+              <div class="warning-icon">!</div>
+              <div>
+                <h3>Secret key kodun içində hardcode edilməməlidir</h3>
+                <p>Session və CSRF kimi mexanizmlər üçün secret-lər environment variable ilə idarə olunmalıdır.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="recap">
+        <div class="section-inner">
+          <div class="section-head">
+            <div class="number">10</div>
+            <div>
+              <h2>Yekun mental model</h2>
+              <p class="lead">
+                Flask-i anlamaq üçün əvvəl bu cümləni yadda saxlayın: route request-i tutur,
+                view function cavabı hazırlayır, response browser-ə qayıdır.
+              </p>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="panel">
+              <div class="panel-title">
+                <span>Özünü yoxla</span>
+                <span class="mini-label">quick quiz</span>
+              </div>
+              <div class="quiz">
+                <strong>Question:</strong> Browser `/profile/7` URL-ni açanda Flask əvvəl nə edir?
+                <div class="quiz-options">
+                  <button data-answer="wrong">Database-i avtomatik yeniləyir</button>
+                  <button data-answer="correct">URL-i route qaydaları ilə müqayisə edir</button>
+                  <button data-answer="wrong">CSS faylını Python-a çevirir</button>
+                </div>
+                <div class="answer" aria-live="polite"></div>
+              </div>
+            </div>
+
+            <div class="panel pad">
+              <span class="mini-label">learning checklist</span>
+              <div class="checklist" style="margin-top:14px">
+                <div class="check"><div><b>Route yaz</b><span>`@app.route("/")` ilə URL yarat.</span></div></div>
+                <div class="check"><div><b>Template render et</b><span>`render_template()` ilə HTML qaytar.</span></div></div>
+                <div class="check"><div><b>Form oxu</b><span>`request.form` ilə input datasını al.</span></div></div>
+                <div class="check"><div><b>JSON qaytar</b><span>`jsonify()` ilə API response hazırla.</span></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <div class="footer-inner">
+          <div>
+            <strong>Python Flask Vizual Bələdçi</strong>
+            <p>Single HTML file: HTML + CSS + JS, Azerbaijani explanation, English technical terms.</p>
+          </div>
+          <a class="top-link" href="#top">Yuxarı qayıt</a>
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    const progressBar = document.getElementById("progressBar");
+    const sections = [...document.querySelectorAll("main section, header.hero")];
+    const tocLinks = [...document.querySelectorAll(".toc a")];
+
+    function updateProgress() {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const percent = max > 0 ? (window.scrollY / max) * 100 : 0;
+      progressBar.style.width = `${Math.min(100, Math.max(0, percent))}%`;
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      const visible = entries
+        .filter((entry) => entry.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+      if (!visible || !visible.target.id) return;
+
+      tocLinks.forEach((link) => {
+        const href = link.getAttribute("href").slice(1);
+        link.classList.toggle("active", href === visible.target.id);
+      });
+    }, {
+      rootMargin: "-30% 0px -55% 0px",
+      threshold: [0.08, 0.18, 0.32]
+    });
+
+    sections.forEach((section) => observer.observe(section));
+    window.addEventListener("scroll", updateProgress, { passive: true });
+    updateProgress();
+
+    document.querySelectorAll(".copy-btn").forEach((button) => {
+      button.addEventListener("click", async () => {
+        const target = document.getElementById(button.dataset.copy);
+        const text = target ? target.innerText : "";
+        try {
+          await navigator.clipboard.writeText(text);
+          button.textContent = "Copied";
+          setTimeout(() => button.textContent = "Copy", 1200);
+        } catch {
+          button.textContent = "Select";
+          setTimeout(() => button.textContent = "Copy", 1200);
+        }
+      });
+    });
+
+    document.querySelectorAll(".quiz button").forEach((button) => {
+      button.addEventListener("click", () => {
+        const quiz = button.closest(".quiz");
+        const answer = quiz.querySelector(".answer");
+        quiz.querySelectorAll("button").forEach((item) => {
+          item.classList.remove("correct", "wrong");
+        });
+
+        if (button.dataset.answer === "correct") {
+          button.classList.add("correct");
+          answer.textContent = "Düzdür: Flask əvvəl routing table ilə uyğun route tapır.";
+        } else {
+          button.classList.add("wrong");
+          answer.textContent = "Tam deyil. Əvvəl route seçilir, sonra funksiya işləyir.";
+        }
+      });
+    });
+  </script>
+</body>
+</html>
